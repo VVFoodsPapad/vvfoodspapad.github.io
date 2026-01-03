@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | VV Foods Papad</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>VV Foods</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="products.html">Products</a>
+            <a href="about.html">About</a>
+            <a href="contact.html" class="active">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <h2>Get in Touch</h2>
+            <p>Have questions or want to place an order? We'd love to hear from you.</p>
+        </section>
+
+        <section>
+            <div class="contact-container">
+                <div>
+                    <h2>Send Us a Message</h2>
+                    <form class="contact-form" action="https://formsubmit.co/veera17179@gmail.com" method="POST">
+                        <input type="hidden" name="_subject" value="New Contact from VV Foods Website">
+                        <input type="hidden" name="_captcha" value="false">
+                        <input type="hidden" name="_next" value="https://vvfoodspapad.com/contact.html?success=true">
+
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" placeholder="Your name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" placeholder="Your phone number">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input type="text" id="subject" name="subject" placeholder="How can we help?" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell us more about your inquiry..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn">Send Message</button>
+                    </form>
+                </div>
+
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <p>
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        </span>
+                        veera17179@gmail.com
+                    </p>
+                    <p>
+                        <span class="icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        </span>
+                        +91 99947 56687
+                    </p>
+
+                    <h3 style="margin-top: 2.5rem;">Quick Response</h3>
+                    <p>We typically respond to all inquiries within 24 hours. For urgent orders, please mention "URGENT" in your subject line.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Frequently Asked Questions</h2>
+            <div class="values-grid">
+                <div class="value-item">
+                    <h3>What is the minimum order quantity?</h3>
+                    <p class="mb-0">For retail orders, there's no minimum. For wholesale, please contact us to discuss your requirements.</p>
+                </div>
+                <div class="value-item">
+                    <h3>Do you ship outside India?</h3>
+                    <p class="mb-0">Currently, we primarily serve customers within India. Contact us for international shipping inquiries.</p>
+                </div>
+                <div class="value-item">
+                    <h3>What is the shelf life?</h3>
+                    <p class="mb-0">Our papads have a shelf life of 6-8 months when stored in a cool, dry place in an airtight container.</p>
+                </div>
+                <div class="value-item">
+                    <h3>Are your products vegetarian?</h3>
+                    <p class="mb-0">Yes! All our papads are 100% vegetarian and made with natural ingredients.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 VV Foods Papad. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Check for success parameter in URL
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            alert('Thank you for your message! We will get back to you soon.');
+            // Remove the query parameter from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
+</body>
+</html>

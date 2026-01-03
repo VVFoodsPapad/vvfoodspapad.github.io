@@ -1,0 +1,14 @@
+{
+  "name": "vvfoods-papad",
+  "version": "1.0.0",
+  "description": "VV Foods Papad Website",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "build": "echo 'Build complete - static site ready'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
