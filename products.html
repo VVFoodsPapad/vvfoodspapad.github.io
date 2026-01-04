@@ -53,18 +53,193 @@
             </div>
         </section>
 
-        <section>
-            <h2>Bulk Orders Only</h2>
-            <p>We offer bulk orders with one-time payments for restaurants and catering businesses. For induvidual orders, please use the contact page or contact +91 9994756687</p>
+        <section class="bulk-orders-section">
+            <h2>Bulk Orders</h2>
+            <p>We offer bulk orders for restaurants, catering businesses, and retailers. Minimum order: 1 kg per variety.</p>
             <p style="margin-top: 1.5rem;">
-                <a href="contact.html" class="cta-btn">Contact for Bulk Orders</a>
+                <button class="cta-btn" onclick="openOrderModal()">Place Bulk Order</button>
             </p>
         </section>
     </main>
 
+    <!-- Order Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeOrderModal()">&times;</span>
+            <h2>Place Bulk Order</h2>
+            <p class="modal-subtitle">Select your appalams, sizes, and quantities (in kg)</p>
+
+            <form id="orderForm" action="https://formsubmit.co/veera17179@gmail.com" method="POST">
+                <input type="hidden" name="_subject" value="New Bulk Order from VV Foods Website">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://vvfoodspapad.com/products.html?success=true">
+                <input type="hidden" name="order_summary" id="orderSummaryInput">
+
+                <!-- Urad Dal Plain -->
+                <div class="order-item">
+                    <h3>Urad Dal Plain</h3>
+                    <div class="order-row">
+                        <div class="order-field">
+                            <label>Size</label>
+                            <select name="plain_size" onchange="calculateTotal()">
+                                <option value="">Select Size</option>
+                                <option value="4in">4 IN (₹350/kg, ~210-220 pcs)</option>
+                                <option value="4.5in">4.5 IN (₹350/kg, ~175-180 pcs)</option>
+                                <option value="5in">5 IN (₹350/kg, ~130 pcs)</option>
+                                <option value="6in">6 IN (₹330/kg, ~80-85 pcs)</option>
+                            </select>
+                        </div>
+                        <div class="order-field">
+                            <label>Quantity (kg)</label>
+                            <input type="number" name="plain_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                        </div>
+                        <div class="order-field">
+                            <label>Subtotal</label>
+                            <span class="subtotal" id="plain_subtotal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Urad Dal Black Pepper -->
+                <div class="order-item">
+                    <h3>Urad Dal Black Pepper</h3>
+                    <div class="order-row">
+                        <div class="order-field">
+                            <label>Size</label>
+                            <select name="pepper_size" onchange="calculateTotal()">
+                                <option value="">Select Size</option>
+                                <option value="4in">4 IN (₹380/kg, ~210-220 pcs)</option>
+                                <option value="4.5in">4.5 IN (₹380/kg, ~175-180 pcs)</option>
+                                <option value="5in">5 IN (₹380/kg, ~130 pcs)</option>
+                                <option value="6in">6 IN (₹350/kg, ~80-85 pcs)</option>
+                            </select>
+                        </div>
+                        <div class="order-field">
+                            <label>Quantity (kg)</label>
+                            <input type="number" name="pepper_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                        </div>
+                        <div class="order-field">
+                            <label>Subtotal</label>
+                            <span class="subtotal" id="pepper_subtotal">₹0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Urad Dal Cumin -->
+                <div class="order-item">
+                    <h3>Urad Dal Cumin</h3>
+                    <div class="order-row">
+                        <div class="order-row">
+                        <div class="order-field">
+                            <label>Size</label>
+                            <select name="cumin_size" onchange="calculateTotal()">
+                                <option value="">Select Size</option>
+                                <option value="4in">4 IN (₹375/kg, ~210-220 pcs)</option>
+                                <option value="4.5in">4.5 IN (₹375/kg, ~175-180 pcs)</option>
+                                <option value="5in">5 IN (₹375/kg, ~130 pcs)</option>
+                                <option value="6in">6 IN (₹345/kg, ~80-85 pcs)</option>
+                            </select>
+                        </div>
+                        <div class="order-field">
+                            <label>Quantity (kg)</label>
+                            <input type="number" name="cumin_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                        </div>
+                        <div class="order-field">
+                            <label>Subtotal</label>
+                            <span class="subtotal" id="cumin_subtotal">₹0</span>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+                <div class="order-total">
+                    <h3>Total: <span id="grandTotal">₹0</span></h3>
+                </div>
+
+                <div class="order-contact">
+                    <div class="order-field">
+                        <label>Your Name *</label>
+                        <input type="text" name="customer_name" required>
+                    </div>
+                    <div class="order-field">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="customer_phone" required>
+                    </div>
+                    <div class="order-field">
+                        <label>Email</label>
+                        <input type="email" name="customer_email">
+                    </div>
+                    <div class="order-field full-width">
+                        <label>Delivery Address *</label>
+                        <textarea name="customer_address" rows="2" required></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="checkoutBtn" disabled>Proceed to Checkout (₹0)</button>
+            </form>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2025 VV Foods Papad. All rights reserved.</p>
     </footer>
+
+    <script>
+        const prices = {
+            plain: { '4in': 350, '4.5in': 350, '5in': 350, '6in': 330 },
+            pepper: { '4in': 380, '4.5in': 380, '5in': 380, '6in': 350 },
+            cumin: { '4in': 375, '4.5in': 375, '5in': 375, '6in': 345 }
+        };
+
+        function calculateTotal() {
+            let grandTotal = 0;
+            let orderSummary = [];
+
+            ['plain', 'pepper', 'cumin'].forEach(type => {
+                const size = document.querySelector(`[name="${type}_size"]`).value;
+                const qty = parseFloat(document.querySelector(`[name="${type}_qty"]`).value) || 0;
+                let subtotal = 0;
+
+                if (size && qty > 0) {
+                    subtotal = prices[type][size] * qty;
+                    const typeName = type === 'plain' ? 'Urad Dal Plain' : type === 'pepper' ? 'Urad Dal Black Pepper' : 'Urad Dal Cumin';
+                    orderSummary.push(`${typeName} (${size.toUpperCase()}): ${qty}kg x ₹${prices[type][size]} = ₹${subtotal}`);
+                }
+
+                document.getElementById(`${type}_subtotal`).textContent = `₹${subtotal}`;
+                grandTotal += subtotal;
+            });
+
+            document.getElementById('grandTotal').textContent = `₹${grandTotal}`;
+            document.getElementById('checkoutBtn').textContent = `Proceed to Checkout (₹${grandTotal})`;
+            document.getElementById('checkoutBtn').disabled = grandTotal === 0;
+            document.getElementById('orderSummaryInput').value = orderSummary.join(' | ') + ` | TOTAL: ₹${grandTotal}`;
+        }
+
+        function openOrderModal() {
+            document.getElementById('orderModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('orderModal');
+            if (event.target === modal) {
+                closeOrderModal();
+            }
+        }
+
+        // Check for success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('success') === 'true') {
+            alert('Thank you for your order! We will contact you shortly to confirm and arrange payment.');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    </script>
 </body>
 </html>
 
