@@ -57,7 +57,10 @@
             <h2>Bulk Orders</h2>
             <p>We offer bulk orders for restaurants, catering businesses, and retailers. Minimum order: 1 kg per variety.</p>
             <p style="margin-top: 1.5rem;">
-                <button class="cta-btn" onclick="openOrderModal()">Place Bulk Order</button>
+                <button class="bulk-order-btn" onclick="openOrderModal()">
+                    <span class="btn-icon">🛒</span>
+                    Place Bulk Order
+                </button>
             </p>
         </section>
     </main>
@@ -67,7 +70,7 @@
         <div class="modal-content">
             <span class="modal-close" onclick="closeOrderModal()">&times;</span>
             <h2>Place Bulk Order</h2>
-            <p class="modal-subtitle">Select your appalams, sizes, and quantities (in kg)</p>
+            <p class="modal-subtitle">Select your appalams, sizes, and quantities (in kg). Click + to add multiple sizes.</p>
 
             <form id="orderForm" action="https://formsubmit.co/veera17179@gmail.com" method="POST">
                 <input type="hidden" name="_subject" value="New Bulk Order from VV Foods Website">
@@ -76,84 +79,100 @@
                 <input type="hidden" name="order_summary" id="orderSummaryInput">
 
                 <!-- Urad Dal Plain -->
-                <div class="order-item">
-                    <h3>Urad Dal Plain</h3>
-                    <div class="order-row">
-                        <div class="order-field">
-                            <label>Size</label>
-                            <select name="plain_size" onchange="calculateTotal()">
-                                <option value="">Select Size</option>
-                                <option value="4in">4 IN (₹350/kg, ~210-220 pcs)</option>
-                                <option value="4.5in">4.5 IN (₹350/kg, ~175-180 pcs)</option>
-                                <option value="5in">5 IN (₹350/kg, ~130 pcs)</option>
-                                <option value="6in">6 IN (₹330/kg, ~80-85 pcs)</option>
-                            </select>
-                        </div>
-                        <div class="order-field">
-                            <label>Quantity (kg)</label>
-                            <input type="number" name="plain_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
-                        </div>
-                        <div class="order-field">
-                            <label>Subtotal</label>
-                            <span class="subtotal" id="plain_subtotal">₹0</span>
+                <div class="order-item" data-type="plain">
+                    <div class="order-item-header">
+                        <h3>Urad Dal Plain</h3>
+                        <button type="button" class="add-size-btn" onclick="addSizeRow('plain')">+ Add Size</button>
+                    </div>
+                    <div class="size-rows" id="plain_rows">
+                        <div class="order-row">
+                            <div class="order-field">
+                                <label>Size</label>
+                                <select onchange="calculateTotal()">
+                                    <option value="">Select Size</option>
+                                    <option value="4in">4 IN (₹350/kg, ~210-220 pcs)</option>
+                                    <option value="4.5in">4.5 IN (₹350/kg, ~175-180 pcs)</option>
+                                    <option value="5in">5 IN (₹350/kg, ~130 pcs)</option>
+                                    <option value="6in">6 IN (₹330/kg, ~80-85 pcs)</option>
+                                </select>
+                            </div>
+                            <div class="order-field">
+                                <label>Quantity (kg)</label>
+                                <input type="number" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                            </div>
+                            <div class="order-field subtotal-field">
+                                <label>Subtotal</label>
+                                <span class="subtotal">₹0</span>
+                            </div>
                         </div>
                     </div>
+                    <div class="item-total">Item Total: <span id="plain_total">₹0</span></div>
                 </div>
 
                 <!-- Urad Dal Black Pepper -->
-                <div class="order-item">
-                    <h3>Urad Dal Black Pepper</h3>
-                    <div class="order-row">
-                        <div class="order-field">
-                            <label>Size</label>
-                            <select name="pepper_size" onchange="calculateTotal()">
-                                <option value="">Select Size</option>
-                                <option value="4in">4 IN (₹380/kg, ~210-220 pcs)</option>
-                                <option value="4.5in">4.5 IN (₹380/kg, ~175-180 pcs)</option>
-                                <option value="5in">5 IN (₹380/kg, ~130 pcs)</option>
-                                <option value="6in">6 IN (₹350/kg, ~80-85 pcs)</option>
-                            </select>
-                        </div>
-                        <div class="order-field">
-                            <label>Quantity (kg)</label>
-                            <input type="number" name="pepper_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
-                        </div>
-                        <div class="order-field">
-                            <label>Subtotal</label>
-                            <span class="subtotal" id="pepper_subtotal">₹0</span>
+                <div class="order-item" data-type="pepper">
+                    <div class="order-item-header">
+                        <h3>Urad Dal Black Pepper</h3>
+                        <button type="button" class="add-size-btn" onclick="addSizeRow('pepper')">+ Add Size</button>
+                    </div>
+                    <div class="size-rows" id="pepper_rows">
+                        <div class="order-row">
+                            <div class="order-field">
+                                <label>Size</label>
+                                <select onchange="calculateTotal()">
+                                    <option value="">Select Size</option>
+                                    <option value="4in">4 IN (₹380/kg, ~210-220 pcs)</option>
+                                    <option value="4.5in">4.5 IN (₹380/kg, ~175-180 pcs)</option>
+                                    <option value="5in">5 IN (₹380/kg, ~130 pcs)</option>
+                                    <option value="6in">6 IN (₹350/kg, ~80-85 pcs)</option>
+                                </select>
+                            </div>
+                            <div class="order-field">
+                                <label>Quantity (kg)</label>
+                                <input type="number" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                            </div>
+                            <div class="order-field subtotal-field">
+                                <label>Subtotal</label>
+                                <span class="subtotal">₹0</span>
+                            </div>
                         </div>
                     </div>
+                    <div class="item-total">Item Total: <span id="pepper_total">₹0</span></div>
                 </div>
 
                 <!-- Urad Dal Cumin -->
-                <div class="order-item">
-                    <h3>Urad Dal Cumin</h3>
-                    <div class="order-row">
+                <div class="order-item" data-type="cumin">
+                    <div class="order-item-header">
+                        <h3>Urad Dal Cumin</h3>
+                        <button type="button" class="add-size-btn" onclick="addSizeRow('cumin')">+ Add Size</button>
+                    </div>
+                    <div class="size-rows" id="cumin_rows">
                         <div class="order-row">
-                        <div class="order-field">
-                            <label>Size</label>
-                            <select name="cumin_size" onchange="calculateTotal()">
-                                <option value="">Select Size</option>
-                                <option value="4in">4 IN (₹375/kg, ~210-220 pcs)</option>
-                                <option value="4.5in">4.5 IN (₹375/kg, ~175-180 pcs)</option>
-                                <option value="5in">5 IN (₹375/kg, ~130 pcs)</option>
-                                <option value="6in">6 IN (₹345/kg, ~80-85 pcs)</option>
-                            </select>
-                        </div>
-                        <div class="order-field">
-                            <label>Quantity (kg)</label>
-                            <input type="number" name="cumin_qty" min="0" step="0.5" value="0" onchange="calculateTotal()">
-                        </div>
-                        <div class="order-field">
-                            <label>Subtotal</label>
-                            <span class="subtotal" id="cumin_subtotal">₹0</span>
+                            <div class="order-field">
+                                <label>Size</label>
+                                <select onchange="calculateTotal()">
+                                    <option value="">Select Size</option>
+                                    <option value="4in">4 IN (₹375/kg, ~210-220 pcs)</option>
+                                    <option value="4.5in">4.5 IN (₹375/kg, ~175-180 pcs)</option>
+                                    <option value="5in">5 IN (₹375/kg, ~130 pcs)</option>
+                                    <option value="6in">6 IN (₹345/kg, ~80-85 pcs)</option>
+                                </select>
+                            </div>
+                            <div class="order-field">
+                                <label>Quantity (kg)</label>
+                                <input type="number" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                            </div>
+                            <div class="order-field subtotal-field">
+                                <label>Subtotal</label>
+                                <span class="subtotal">₹0</span>
+                            </div>
                         </div>
                     </div>
-                    </div>
+                    <div class="item-total">Item Total: <span id="cumin_total">₹0</span></div>
                 </div>
 
                 <div class="order-total">
-                    <h3>Total: <span id="grandTotal">₹0</span></h3>
+                    <h3>Grand Total: <span id="grandTotal">₹0</span></h3>
                 </div>
 
                 <div class="order-contact">
@@ -175,7 +194,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="submit-btn" id="checkoutBtn" disabled>Proceed to Checkout (₹0)</button>
+                <button type="submit" class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout (₹0)</button>
             </form>
         </div>
     </div>
@@ -191,23 +210,78 @@
             cumin: { '4in': 375, '4.5in': 375, '5in': 375, '6in': 345 }
         };
 
+        const sizeOptions = {
+            plain: `<option value="">Select Size</option>
+                    <option value="4in">4 IN (₹350/kg, ~210-220 pcs)</option>
+                    <option value="4.5in">4.5 IN (₹350/kg, ~175-180 pcs)</option>
+                    <option value="5in">5 IN (₹350/kg, ~130 pcs)</option>
+                    <option value="6in">6 IN (₹330/kg, ~80-85 pcs)</option>`,
+            pepper: `<option value="">Select Size</option>
+                    <option value="4in">4 IN (₹380/kg, ~210-220 pcs)</option>
+                    <option value="4.5in">4.5 IN (₹380/kg, ~175-180 pcs)</option>
+                    <option value="5in">5 IN (₹380/kg, ~130 pcs)</option>
+                    <option value="6in">6 IN (₹350/kg, ~80-85 pcs)</option>`,
+            cumin: `<option value="">Select Size</option>
+                    <option value="4in">4 IN (₹375/kg, ~210-220 pcs)</option>
+                    <option value="4.5in">4.5 IN (₹375/kg, ~175-180 pcs)</option>
+                    <option value="5in">5 IN (₹375/kg, ~130 pcs)</option>
+                    <option value="6in">6 IN (₹345/kg, ~80-85 pcs)</option>`
+        };
+
+        function addSizeRow(type) {
+            const container = document.getElementById(`${type}_rows`);
+            const newRow = document.createElement('div');
+            newRow.className = 'order-row';
+            newRow.innerHTML = `
+                <div class="order-field">
+                    <label>Size</label>
+                    <select onchange="calculateTotal()">${sizeOptions[type]}</select>
+                </div>
+                <div class="order-field">
+                    <label>Quantity (kg)</label>
+                    <input type="number" min="0" step="0.5" value="0" onchange="calculateTotal()">
+                </div>
+                <div class="order-field subtotal-field">
+                    <label>Subtotal</label>
+                    <span class="subtotal">₹0</span>
+                </div>
+                <button type="button" class="remove-row-btn" onclick="removeRow(this)">×</button>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeRow(btn) {
+            btn.parentElement.remove();
+            calculateTotal();
+        }
+
         function calculateTotal() {
             let grandTotal = 0;
             let orderSummary = [];
 
             ['plain', 'pepper', 'cumin'].forEach(type => {
-                const size = document.querySelector(`[name="${type}_size"]`).value;
-                const qty = parseFloat(document.querySelector(`[name="${type}_qty"]`).value) || 0;
-                let subtotal = 0;
+                const container = document.getElementById(`${type}_rows`);
+                const rows = container.querySelectorAll('.order-row');
+                let itemTotal = 0;
+                const typeName = type === 'plain' ? 'Urad Dal Plain' : type === 'pepper' ? 'Urad Dal Black Pepper' : 'Urad Dal Cumin';
 
-                if (size && qty > 0) {
-                    subtotal = prices[type][size] * qty;
-                    const typeName = type === 'plain' ? 'Urad Dal Plain' : type === 'pepper' ? 'Urad Dal Black Pepper' : 'Urad Dal Cumin';
-                    orderSummary.push(`${typeName} (${size.toUpperCase()}): ${qty}kg x ₹${prices[type][size]} = ₹${subtotal}`);
-                }
+                rows.forEach(row => {
+                    const size = row.querySelector('select').value;
+                    const qty = parseFloat(row.querySelector('input').value) || 0;
+                    const subtotalSpan = row.querySelector('.subtotal');
+                    let subtotal = 0;
 
-                document.getElementById(`${type}_subtotal`).textContent = `₹${subtotal}`;
-                grandTotal += subtotal;
+                    if (size && qty > 0) {
+                        subtotal = prices[type][size] * qty;
+                        orderSummary.push(`${typeName} (${size.toUpperCase()}): ${qty}kg x ₹${prices[type][size]} = ₹${subtotal}`);
+                    }
+
+                    subtotalSpan.textContent = `₹${subtotal}`;
+                    itemTotal += subtotal;
+                });
+
+                document.getElementById(`${type}_total`).textContent = `₹${itemTotal}`;
+                grandTotal += itemTotal;
             });
 
             document.getElementById('grandTotal').textContent = `₹${grandTotal}`;
