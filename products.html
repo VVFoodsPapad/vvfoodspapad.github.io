@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Products | VV Foods Papad</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
     <header>
@@ -178,23 +179,23 @@
                 <div class="order-contact">
                     <div class="order-field">
                         <label>Your Name *</label>
-                        <input type="text" name="customer_name" required>
+                        <input type="text" name="customer_name" id="customerName" required>
                     </div>
                     <div class="order-field">
                         <label>Phone Number *</label>
-                        <input type="tel" name="customer_phone" required>
+                        <input type="tel" name="customer_phone" id="customerPhone" required>
                     </div>
                     <div class="order-field">
-                        <label>Email</label>
-                        <input type="email" name="customer_email">
+                        <label>Email *</label>
+                        <input type="email" name="customer_email" id="customerEmail" required>
                     </div>
                     <div class="order-field full-width">
                         <label>Delivery Address *</label>
-                        <textarea name="customer_address" rows="2" required></textarea>
+                        <textarea name="customer_address" id="customerAddress" rows="2" required></textarea>
                     </div>
                 </div>
 
-                <button type="submit" class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout (₹0)</button>
+                <button type="button" class="checkout-btn" id="checkoutBtn" onclick="initiatePayment()" disabled>Pay with Razorpay (₹0)</button>
             </form>
         </div>
     </div>
@@ -204,6 +205,10 @@
     </footer>
 
     <script>
+        const RAZORPAY_KEY = 'rzp_live_S0C6hYSTDsgzJr';
+        let currentTotal = 0;
+        let currentOrderSummary = '';
+
         const prices = {
             plain: { '4in': 350, '4.5in': 350, '5in': 350, '6in': 330 },
             pepper: { '4in': 380, '4.5in': 380, '5in': 380, '6in': 350 },
@@ -284,10 +289,123 @@
                 grandTotal += itemTotal;
             });
 
+            currentTotal = grandTotal;
+            currentOrderSummary = orderSummary.join('\n');
+
             document.getElementById('grandTotal').textContent = `₹${grandTotal}`;
-            document.getElementById('checkoutBtn').textContent = `Proceed to Checkout (₹${grandTotal})`;
+            document.getElementById('checkoutBtn').textContent = `Pay with Razorpay (₹${grandTotal})`;
             document.getElementById('checkoutBtn').disabled = grandTotal === 0;
             document.getElementById('orderSummaryInput').value = orderSummary.join(' | ') + ` | TOTAL: ₹${grandTotal}`;
+        }
+
+        function validateForm() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+
+            if (!name || !phone || !email || !address) {
+                alert('Please fill in all required fields (Name, Phone, Email, Address)');
+                return false;
+            }
+            if (currentTotal === 0) {
+                alert('Please add items to your order');
+                return false;
+            }
+            return true;
+        }
+
+        function initiatePayment() {
+            if (!validateForm()) return;
+
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const address = document.getElementById('customerAddress').value.trim();
+
+            const options = {
+                key: RAZORPAY_KEY,
+                amount: currentTotal * 100, // Razorpay expects amount in paise
+                currency: 'INR',
+                name: 'VV Foods Papad',
+                description: 'Bulk Appalam Order',
+                image: 'https://vvfoodspapad.com/VVFoodsPapadlogo.png',
+                prefill: {
+                    name: name,
+                    email: email,
+                    contact: phone
+                },
+                theme: {
+                    color: '#e8b86d'
+                },
+                handler: function(response) {
+                    // Payment successful - send invoice email
+                    sendInvoiceEmail(response.razorpay_payment_id, name, email, phone, address);
+                },
+                modal: {
+                    ondismiss: function() {
+                        console.log('Payment cancelled');
+                    }
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.on('payment.failed', function(response) {
+                alert('Payment failed. Please try again. Error: ' + response.error.description);
+            });
+            rzp.open();
+        }
+
+        function sendInvoiceEmail(paymentId, name, email, phone, address) {
+            // Create invoice details
+            const invoiceData = {
+                _subject: `✅ PAID - New Order from ${name} (Payment ID: ${paymentId})`,
+                _captcha: 'false',
+                _template: 'table',
+                'Payment ID': paymentId,
+                'Payment Status': 'PAID ✅',
+                'Customer Name': name,
+                'Customer Email': email,
+                'Customer Phone': phone,
+                'Delivery Address': address,
+                'Order Details': currentOrderSummary,
+                'Total Amount': `₹${currentTotal}`,
+                'Order Date': new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+            };
+
+            // Send to FormSubmit
+            fetch('https://formsubmit.co/ajax/veera17179@gmail.com', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(invoiceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                closeOrderModal();
+                showSuccessMessage(paymentId);
+            })
+            .catch(error => {
+                console.error('Email error:', error);
+                closeOrderModal();
+                showSuccessMessage(paymentId);
+            });
+        }
+
+        function showSuccessMessage(paymentId) {
+            alert(`🎉 Payment Successful!\n\nPayment ID: ${paymentId}\nAmount: ₹${currentTotal}\n\nThank you for your order! An invoice has been sent to our team. We will contact you shortly to arrange delivery.`);
+            // Reset form
+            document.getElementById('orderForm').reset();
+            ['plain', 'pepper', 'cumin'].forEach(type => {
+                const container = document.getElementById(`${type}_rows`);
+                const rows = container.querySelectorAll('.order-row');
+                rows.forEach((row, index) => {
+                    if (index > 0) row.remove();
+                });
+            });
+            calculateTotal();
         }
 
         function openOrderModal() {
@@ -305,13 +423,6 @@
             if (event.target === modal) {
                 closeOrderModal();
             }
-        }
-
-        // Check for success parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('success') === 'true') {
-            alert('Thank you for your order! We will contact you shortly to confirm and arrange payment.');
-            window.history.replaceState({}, document.title, window.location.pathname);
         }
     </script>
 </body>
