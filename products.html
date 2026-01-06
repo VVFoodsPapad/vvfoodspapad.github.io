@@ -23,12 +23,12 @@
 
     <main>
         <section class="hero">
-            <h2>Our Products</h2>
+            <h2>Our Crispy Appalams</h2>
             <p>Discover our range of handcrafted appalams.</p>
         </section>
 
         <section>
-            <h2>Our Appalams</h2>
+            <h2>Our Crispy Appalams</h2>
             <div class="products-grid">
                 <div class="product-card">
                     <div class="product-image">
@@ -59,7 +59,11 @@
             <p>We offer bulk orders for restaurants, catering businesses, and retailers. Minimum order: 1 kg per variety.</p>
             <p style="margin-top: 1.5rem;">
                 <button class="bulk-order-btn" onclick="openOrderModal()">
-                    <span class="btn-icon">🛒</span>
+                    <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
                     Place Bulk Order
                 </button>
             </p>
@@ -185,14 +189,27 @@
                         <label>Phone Number *</label>
                         <input type="tel" name="customer_phone" id="customerPhone" required>
                     </div>
-                    <div class="order-field">
+                    <div class="order-field full-width">
                         <label>Email *</label>
                         <input type="email" name="customer_email" id="customerEmail" required>
                     </div>
                     <div class="order-field full-width">
-                        <label>Delivery Address *</label>
-                        <textarea name="customer_address" id="customerAddress" rows="2" required></textarea>
+                        <label>Delivery Address 1 *</label>
+                        <textarea name="customer_address_1" id="customerAddress1" rows="2" placeholder="Primary delivery address" required></textarea>
                     </div>
+                    <div class="order-field full-width">
+                        <label>Delivery Address 2 (Optional)</label>
+                        <textarea name="customer_address_2" id="customerAddress2" rows="2" placeholder="Secondary delivery address (if applicable)"></textarea>
+                    </div>
+                </div>
+
+                <div class="payment-warning">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Please do not refresh or close the page during payment.</span>
                 </div>
 
                 <button type="button" class="checkout-btn" id="checkoutBtn" onclick="initiatePayment()" disabled>Pay with Razorpay (₹0)</button>
@@ -302,10 +319,10 @@
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
             const email = document.getElementById('customerEmail').value.trim();
-            const address = document.getElementById('customerAddress').value.trim();
+            const address1 = document.getElementById('customerAddress1').value.trim();
 
-            if (!name || !phone || !email || !address) {
-                alert('Please fill in all required fields (Name, Phone, Email, Address)');
+            if (!name || !phone || !email || !address1) {
+                alert('Please fill in all required fields (Name, Phone, Email, Delivery Address 1)');
                 return false;
             }
             if (currentTotal === 0) {
@@ -321,7 +338,8 @@
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
             const email = document.getElementById('customerEmail').value.trim();
-            const address = document.getElementById('customerAddress').value.trim();
+            const address1 = document.getElementById('customerAddress1').value.trim();
+            const address2 = document.getElementById('customerAddress2').value.trim();
 
             const options = {
                 key: RAZORPAY_KEY,
@@ -329,7 +347,7 @@
                 currency: 'INR',
                 name: 'VV Foods Papad',
                 description: 'Bulk Appalam Order',
-                image: 'https://vvfoodspapad.com/VVFoodsPapadlogo.png',
+                image: 'https://vvfoodspapad.github.io/VVFoodsPapadlogo.png',
                 prefill: {
                     name: name,
                     email: email,
@@ -340,23 +358,28 @@
                 },
                 handler: function(response) {
                     // Payment successful - send invoice email
-                    sendInvoiceEmail(response.razorpay_payment_id, name, email, phone, address);
+                    sendInvoiceEmail(response.razorpay_payment_id, name, email, phone, address1, address2);
                 },
                 modal: {
                     ondismiss: function() {
+                        isProcessingPayment = false;
                         console.log('Payment cancelled');
-                    }
+                    },
+                    confirm_close: true,
+                    escape: false
                 }
             };
 
+            isProcessingPayment = true;
             const rzp = new Razorpay(options);
             rzp.on('payment.failed', function(response) {
+                isProcessingPayment = false;
                 alert('Payment failed. Please try again. Error: ' + response.error.description);
             });
             rzp.open();
         }
 
-        function sendInvoiceEmail(paymentId, name, email, phone, address) {
+        function sendInvoiceEmail(paymentId, name, email, phone, address1, address2) {
             // Create invoice details
             const invoiceData = {
                 _subject: `✅ PAID - New Order from ${name} (Payment ID: ${paymentId})`,
@@ -367,7 +390,8 @@
                 'Customer Name': name,
                 'Customer Email': email,
                 'Customer Phone': phone,
-                'Delivery Address': address,
+                'Delivery Address 1': address1,
+                'Delivery Address 2': address2 || 'Not provided',
                 'Order Details': currentOrderSummary,
                 'Total Amount': `₹${currentTotal}`,
                 'Order Date': new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
@@ -384,11 +408,13 @@
             })
             .then(response => response.json())
             .then(data => {
+                isProcessingPayment = false;
                 closeOrderModal();
                 showSuccessMessage(paymentId);
             })
             .catch(error => {
                 console.error('Email error:', error);
+                isProcessingPayment = false;
                 closeOrderModal();
                 showSuccessMessage(paymentId);
             });
@@ -409,21 +435,41 @@
         }
 
         function openOrderModal() {
-            document.getElementById('orderModal').style.display = 'flex';
+            const modal = document.getElementById('orderModal');
+            modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
+            // Trigger reflow for animation
+            modal.offsetHeight;
+            modal.classList.add('active');
         }
 
         function closeOrderModal() {
-            document.getElementById('orderModal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            const modal = document.getElementById('orderModal');
+            modal.classList.add('closing');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.classList.remove('closing');
+                document.body.style.overflow = 'auto';
+            }, 300);
         }
 
         window.onclick = function(event) {
             const modal = document.getElementById('orderModal');
-            if (event.target === modal) {
+            if (event.target === modal && !modal.classList.contains('closing')) {
                 closeOrderModal();
             }
         }
+
+        // Prevent page reload during transaction
+        let isProcessingPayment = false;
+        window.addEventListener('beforeunload', function(e) {
+            if (isProcessingPayment) {
+                e.preventDefault();
+                e.returnValue = 'Payment is in progress. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
     </script>
 </body>
 </html>
